@@ -6,6 +6,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -15,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@DynamoDBTable(tableName = "AssetUser")
+@DynamoDBTable(tableName = "FileUser")
 @ToString
 public class FileUser {
     @Getter
@@ -30,6 +31,7 @@ public class FileUser {
     }
     @DynamoDBAttribute(attributeName = "name")
     private String name;
+
     @DynamoDBHashKey(attributeName = "user_id")
     private String userid;
     // this could be another class and it's own table
@@ -48,12 +50,12 @@ public class FileUser {
     @DynamoDBAttribute(attributeName = "last_login")
     private Date lastLogin;
 
-    @DynamoDBAttribute(attributeName = "email")
-    private String email;
+    // @DynamoDBAttribute(attributeName = "email")
+    // private String email;
     // @DynamoDBFlattened
     // maybe in the start, leave it to a "," separated string?
     //Use Lists and not a String[] array. Array types not supported by DynamoDB
-    @DynamoDBAttribute(attributeName = "assets_uploaded")
-    private List<String> filesUploaded;
+    @DynamoDBAttribute(attributeName = "file_uploaded")
+    private List<String> filesUploaded = new ArrayList<>();
 
 }
