@@ -43,18 +43,18 @@ public class FileStorageController {
      * - document too large or something
      *
      * @param file
-     * @param userId
+     * @param username
      * @return
      * @throws IOException
      */
     @RequestMapping("/upload")
     public ResponseEntity<ServiceResponse> handleFileUpload(@RequestParam("file") MultipartFile file,
-                                                            @RequestParam("userId") String userId)
-            throws IOException {
+                                                            @RequestParam("username") String username)
+            throws Exception {
         InputStream is = file.getInputStream();
         String filename = file.getOriginalFilename();
         log.info("Request to upload file = " + filename);
-        ServiceResponse response = storageService.uploadFile(file, userId);
+        ServiceResponse response = storageService.uploadFile(file, username);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
     }
 

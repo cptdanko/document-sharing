@@ -40,7 +40,7 @@ public class UserController {
         return new ResponseEntity<>(deleteState, HttpStatus.valueOf(deleteState.getStatus()));
     }
 
-    @PutMapping("/{userId}")
+    @PutMapping(value = "/{userId}", consumes = {"application/json"})
     public ResponseEntity<ServiceResponse> updateUserDetails(@PathVariable("userId") String userId, @RequestBody CreateUserRequest createUserRequest) {
         ServiceResponse response = userService.updateUser(userId, createUserRequest);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
