@@ -1,9 +1,9 @@
 package com.mydaytodo.sfa.asset.service;
 
-import com.amazonaws.services.s3.model.*;
+import com.amazonaws.services.s3.model.CreateBucketRequest;
 import com.mydaytodo.sfa.asset.config.AWSConfig;
-import com.mydaytodo.sfa.asset.model.FileUser;
 import com.mydaytodo.sfa.asset.model.FileMetadataUploadRequest;
+import com.mydaytodo.sfa.asset.model.FileUser;
 import com.mydaytodo.sfa.asset.model.ServiceResponse;
 import com.mydaytodo.sfa.asset.repository.S3Repository;
 import com.mydaytodo.sfa.asset.repository.UserRepositoryImpl;
@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -79,8 +80,9 @@ public class StorageServiceImpl {
         // hard coded asset type to DOCUMENT for now
         request.setAssetType("DOCUMENT");
         request.setUserId(username);
-        log.info("Set the documentMetaUploadRequest obje3ct");
+        log.info(String.format("About to save document metadata [ %s ]", request.toString()));
         ServiceResponse metadataUploadResp = documentService.saveDocumentMetadata(request);
+        log.info(String.format("Saved the metadata"));
         if (metadataUploadResp.getStatus() > 299) {
             return ServiceResponse.builder()
                     .message("Something went wrong, please try again later")
@@ -89,17 +91,23 @@ public class StorageServiceImpl {
         }
         String filename = username + "/" + file.getOriginalFilename();
         log.info(filename);
+        ServiceResponse response = s3Repository.putS3Object(convertMultipartFile(file), filename);
         addFIlenameToFilesUploadedByUser(username, filename);
-        return s3Repository.putS3Object(convertMultipartFile(file), filename);
+        return response;
     }
+
+    /**
+     * @param username
+     * @param filename
+     * @throws Exception
+     */
     private void addFIlenameToFilesUploadedByUser(String username, String filename) throws Exception {
         log.info("About to add the filename to files uploaded");
         Optional<FileUser> optionalUser = userRepository.getUserByUsername(username);
         log.info(String.format("Got user by name [ %s ]", optionalUser.get()));
         FileUser user = optionalUser.orElseThrow();
-        user.getFilesUploaded().add(filename);
-        log.info("Added the files uploaded to user object");
-        userRepository.updateUser(user.getUserid(), user);
+        log.info(String.format("About to update user with [ $s ], and id [ %s ]", user.getUsername(), user.getUserid()));
+        userRepository.addFilenameToFilesUploaded(user.getUserid(), Collections.singletonList(filename));
         log.info(String.format("Updated user object [ %d]", user.getFilesUploaded().size()));
     }
 

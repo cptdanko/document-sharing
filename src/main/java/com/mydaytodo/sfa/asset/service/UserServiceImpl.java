@@ -120,9 +120,16 @@ public class UserServiceImpl {
         }
     }
 
+    /**ins
+     * @param userId
+     * @param createUserRequest
+     * @return
+     */
     public ServiceResponse updateUser(String userId, CreateUserRequest createUserRequest) {
         try {
+            log.info(String.format("CreateUserRequest body received [ %s ]", createUserRequest.toString()));
             FileUser assetUser = CreateUserRequest.convertRequest(createUserRequest);
+            log.info(String.format("Got the file user obj [ %s ]", assetUser.toString()));
             assetUser = userRepository.updateUser(userId, assetUser);
             return ServiceResponse.builder()
                     .data(assetUser)

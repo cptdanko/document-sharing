@@ -19,27 +19,11 @@ import java.util.List;
 @DynamoDBTable(tableName = "FileUser")
 @ToString
 public class FileUser {
-    @Getter
-    enum ROLE {
-        ADMIN("admin"),
-        USER("user");
-
-        private String role;
-        ROLE(String role) {
-            this.role = role;
-        }
-    }
     @DynamoDBAttribute(attributeName = "name")
     private String name;
 
     @DynamoDBHashKey(attributeName = "user_id")
     private String userid;
-    // this could be another class and it's own table
-    @DynamoDBAttribute(attributeName = "department")
-    private String department;
-    // post mvp, make this it's own table
-    @DynamoDBAttribute(attributeName = "role")
-    private String role;
     // to ensure uniqueness, the username is the email id
     @DynamoDBAttribute(attributeName = "username")
     private String username;
@@ -55,7 +39,7 @@ public class FileUser {
     // @DynamoDBFlattened
     // maybe in the start, leave it to a "," separated string?
     //Use Lists and not a String[] array. Array types not supported by DynamoDB
-    @DynamoDBAttribute(attributeName = "file_uploaded")
-    private List<String> filesUploaded = new ArrayList<>();
+    @DynamoDBAttribute(attributeName = "files_uploaded")
+    private List<String> filesUploaded;
 
 }
